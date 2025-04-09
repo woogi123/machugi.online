@@ -1,0 +1,90 @@
+<!--join->save-->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstarp -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- ajax -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/login_save.css">
+    <title>회원가입</title>
+</head>
+
+<body class="bg-light d-flex justify-content-center align-items-center vh-100">
+<div class="bg-white p-4 rounded shadow-sm w-100" style="max-width: 400px;">
+    <div class="mb-4">
+        <h1>회원가입</h1><br>
+    </div>
+    <!-- ★★★★★중요★★★★ -->
+    <!-- input태그 내의 name을 본인 엔티티에 맞게 수정할것 -->
+
+    <form action="/machugi/save" method="post" enctype="multipart/form-data">
+
+        <div class="mb-3">
+            <label for="memberName" class="form-label"> 이름 </label>
+            <input type="text" name="memberName" id="memberName" placeholder="이름을 입력하세요" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <!--아이디-->
+            <label for="memberEmail" "form-label">아이디</label>
+            <input type="text" name="memberEmail" id="memberEmail" placeholder="아이디를 입력하세요" oninput="Check_id()"
+                   class="form-control">
+            <small id="instruction" class ="inst"></small>
+        </div>
+
+        <div class="mb-3">
+            <!--비밀번호-->
+            <label for="memberPassword" "form-label">비밀번호</label>
+            <input type="password" name="memberPassword" id="memberPassword" placeholder="비밀번호를 입력하세요"
+                   class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100"> 회원가입</button>
+
+</div>
+</form>
+
+</body>
+
+<script type="text/javascript">
+    const Check_id = () => {
+        let memberEmail = document.getElementById("memberEmail").value;
+        let Instruction = document.getElementById("instruction");
+        $.ajax({
+            type: "post",
+            url: "/machugi/email-check",
+
+            data: {"memberEmail": memberEmail},
+            success: function (res) {
+                if (memberEmail.length < 6) {
+                    instruction.innerText = "ID는 6글자 이상이어야 합니다.";
+                }
+                //중복이면?
+                else if (res == "") {
+                    instruction.innerText = "중복된 ID 입니다.";
+                }
+
+                else {
+                    instruction.innerText = "사용 가능한 ID 입니다.";
+                }
+
+            },
+            error: function () {
+                console.log("실패")
+            }
+
+        })
+
+    }
+
+</script>
+
+</html>

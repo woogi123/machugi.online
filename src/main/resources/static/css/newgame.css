@@ -1,0 +1,105 @@
+/* /css/newgame.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+.form-title {
+    font-size: 24px; /* 폰트 크기 크게 설정 */
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    color: #333;
+}
+
+input[type="text"],
+input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+input[type="text"]:focus,
+input[type="file"]:focus {
+    border-color: #007BFF;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+input[type="file"] {
+    padding: 5px;
+}
+
+br {
+    display: block;
+    content: "";
+    margin-bottom: 10px;
+}
+
+/* 버튼 컨테이너 스타일 */
+.button-container {
+    text-align: right;
+    margin-top: 20px;
+}
+
+/* 만들기 버튼 스타일 */
+.submit-btn {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 600px) {
+    form {
+        padding: 15px;
+        max-width: 90%;
+    }
+
+    .form-title {
+        font-size: 20px;
+    }
+
+    input[type="text"],
+    input[type="file"] {
+        font-size: 12px;
+    }
+
+    .submit-btn {
+        font-size: 12px;
+        padding: 8px 16px;
+    }
+}

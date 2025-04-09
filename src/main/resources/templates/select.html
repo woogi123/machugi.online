@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>select</title>
+  <link rel="stylesheet" href="/css/select.css">
+</head>
+<body>
+
+<!-- 게임 리스트를 담는 컨테이너 -->
+<div class="select_container">
+  <div th:each="games : ${games}" class="select_board" onclick="openModal()">
+    <div class="select_image">
+      <img th:src="@{|/upload/${games.storedFileName != null ? games.storedFileName : 'default.jpg'}|}" alt="이미지">
+    </div>
+    <div class="select_topic" th:text="${games.topic}"></div>
+    <div class="select_builder" th:text="${games.builder}"></div>
+  </div>
+
+  <!-- 새 게임 추가 카드 -->
+  <a href="/machugi/newGame" style="text-decoration: none;">
+    <div class="select_board add_card">
+      <div class="select_image plus_image">+</div>
+      <div class="select_topic">새 게임 추가</div>
+      <div class="select_builder">&nbsp;</div>
+    </div>
+  </a>
+</div>
+
+
+<!-- 모달: 팝업창 -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <a href="/machugi/findGame">
+      <div class="select_game">게임 찾기</div>
+    </a>
+    <a href="/machugi/ingameSelect">
+      <div class="ingame_select">게임 만들기</div>
+    </a>
+  </div>
+</div>
+
+<script>
+  function openModal() {
+    const modal = document.querySelector('#modal');
+    modal.style.display = 'flex';
+  }
+
+  // 모달 외부 클릭 시 닫기
+  const modal = document.querySelector('#modal');
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+</script>
+
+</body>
+</html>

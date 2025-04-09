@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>newGame</title>
+    <link rel="stylesheet" href="/css/newgame.css">
+</head>
+
+<body>
+
+<form action="/machugi/newGame" method="post" enctype="multipart/form-data">
+    <h1 class="form-title">마추기.io 만들기</h1>
+
+    <label for="cover_img">표지 이미지:</label>
+    <input type="file" name="cover_img" id="cover_img"><br>
+
+    <label for="ingame_img">문제 이미지:</label>
+    <input type="file" name="ingame_img" id="ingame_img">
+    <span style="color: red; font-size: 12px; font-weight: bold;">최소 6개 이상 넣어주세요.</span><br>
+
+    <label for="topic">주제:</label>
+    <input type="text" name="topic" id="topic"><br>
+
+    <div class="button-container">
+        <button type="submit" class="submit-btn">만들기</button>
+    </div>
+
+    <!--    <label for="img_select">파일:</label>-->
+    <!--    <input type="file" name="img_select" id="img_select" onchange="previewImage(event)">-->
+</form>
+
+</body>
+
+</html>
+
+<!-- 이미지 저장법 공부하기-->
