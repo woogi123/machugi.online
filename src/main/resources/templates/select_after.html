@@ -9,13 +9,13 @@
 
 <!-- 게임 리스트를 담는 컨테이너 -->
 <div class="select_container">
-<!--  <div th:each="games : ${games}" class="select_board" onclick="openModal()">-->
-<!--    <div class="select_image">-->
-<!--      <img th:src="@{|/upload/${games.storedFileName != null ? games.storedFileName : 'default.jpg'}|}" alt="이미지">-->
-<!--    </div>-->
-<!--    <div class="select_topic" th:text="${games.topic}"></div>-->
-<!--    <div class="select_builder" th:text="${games.builder}"></div>-->
-<!--  </div>-->
+  <div th:each="games : ${games}" class="select_board" onclick="openModal()">
+    <div class="select_image">
+      <img th:src="@{|/upload/${games.storedFileName != null ? games.storedFileName : 'default.jpg'}|}" alt="이미지">
+    </div>
+    <div class="select_topic" th:text="${games.topic}"></div>
+    <div class="select_builder" th:text="${games.builder}"></div>
+  </div>
 
   <!-- 새 게임 추가 카드 -->
   <a href="/machugi/newGame" style="text-decoration: none;">
