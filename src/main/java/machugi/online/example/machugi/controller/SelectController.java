@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.io.IOException;
+
 @Controller
 @RequiredArgsConstructor
 public class SelectController {
@@ -29,9 +31,9 @@ public class SelectController {
     }
 
     @PostMapping("/select")
-    public String image_attached(@ModelAttribute SelectDTO selectDTO){
+    public String image_attached(@ModelAttribute SelectDTO selectDTO) throws IOException {
         System.out.println("boardDTO = "+ selectDTO);
-        SelectService.save(selectDTO);
+        selectService.save(selectDTO);
         return "select";
     }
 }
