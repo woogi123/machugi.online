@@ -33,6 +33,14 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
+	//웹소켓
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	// STOMP
+	implementation 'org.webjars:stomp-websocket:2.3.4'
+
+	// SockJS
+	implementation 'org.webjars:sockjs-client:1.5.1'
+	
 	// 추가 코드
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }

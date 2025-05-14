@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Bootstarp -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+	<!-- ajax -->
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+		integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+	<!-- css -->
+	<link rel="stylesheet" href="/css/styles.css">
+
+	<style>
+		/* 모달 배경 */
+		.modal-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.6);
+			display: none;
+			justify-content: center;
+			align-items: center;
+			z-index: 1000;
+		}
+
+		/* 모달 내용 */
+		.modal-content {
+			background-color: white;
+			padding: 20px;
+			border-radius: 10px;
+			width: 300px;
+			text-align: center;
+		}
+
+		.close-btn {
+			margin-top: 10px;
+			padding: 5px 10px;
+		}
+	</style>
+
+	<title>방 목록 테스트</title>
+</head>
+
+<body class="bg-light justify-content-center align-items-center vh-100 mt-5">
+	<div class="container">
+		<div class="row gap-3">
+			<div class="bg-white p-4 rounded shadow-sm col-md-8">
+
+				<button class="btn btn-outline-primary btn-sm" onclick="openModal()">방 만들기</button>
+
+			</div>
+		</div>
+
+		<!-- 모달 영역 -->
+		<div id="makeRoom" class="modal-overlay">
+			<div class="modal-content">
+				<h2>방 만들기</h2>
+				<div class="mb-3 mt-3 col-md-9">
+					<input type="text" name="roomName" id="room_name" placeholder="방 제목" class="form-control">
+				</div>
+				<div class="mb-3 mt-3 col-md-9">
+					<label for="maxUsers">최대 인원: <span id="userCount">4</span>명</label>
+					<input type="range" id="maxUsers" name="maxUsers" min="2" max="8" value="4" class="form-range">
+				</div>
+				<button class="btn btn-outline-primary btn-sm" onclick="closeModal()">닫기</button>
+
+				<button class="btn btn-outline-primary btn-sm" onclick="createRoom()">방 만들기</button>
+			</div>
+		</div>
+
+		<div class="container mt-4">
+			<table class="table table-striped text-center">
+				<thead class="table-light">
+					<tr>
+						<th>#</th>>
+					</tr>
+				</thead>
+				<tbody id="roomList">
+
+				</tbody>
+			</table>
+		</div>
+		<p id="userEmail" th:text="${session.loginEmail}" hidden></p>
+
+
+
+
+		<!-- 모달 제어 스크립트 -->
+		<script>
+			function openModal() {
+				document.getElementById("makeRoom").style.display = "flex";
+			}
+
+			function closeModal() {
+				document.getElementById("makeRoom").style.display = "none";
+			}
+
+			// 모달 외부 클릭 시 닫기
+			window.onclick = function (event) {
+				const modal = document.getElementById("makeRoom");
+				if (event.target === modal) {
+					closeModal();
+				}
+			}
+
+			const maxUsersSlider = document.getElementById('maxUsers');
+			const userCountDisplay = document.getElementById('userCount');
+
+			maxUsersSlider.addEventListener('input', function () {
+				userCountDisplay.textContent = maxUsersSlider.value;
+			});
+		</script>
+
+
+		<script>
+			const createRoom = () => {
+				const postData = {
+				
+					name: $("#room_name").val(),
+					maxUsers: $("#maxUsers").val(),
+					topic: "testTopic"
+				};
+				let userEmail = $("#userEmail").val;
+				$.ajax({
+					type: "post",
+					url: "/CreateRoom",
+					contentType: 'application/json',
+					data: JSON.stringify(postData),
+
+					success: function (res) {
+						console.log("테스트성공");
+						window.location.replace("/room/" + res);
+					},
+					error: function () {
+						console.log("테스트실패");
+
+					}
+				});
+
+			}
+
+			window.onload = function () {
+				//첫 로드시 방 목록 불러오기
+				getList()
+			}
+
+			function getList() {
+				$.ajax({
+
+					type: "get",
+					url: "/RoomList",
+
+					success: function (res) {
+						console.log(res);
+						let htmlContent = "";
+
+						res.forEach(function (list) {
+
+							htmlContent += `<tr>
+								<td> ${list.name}</td>
+								<td> ${list.maxUsers}</td>
+								<td> ${list.topic}</td>
+								<td><button class="btn btn-outline-primary btn-sm" onclick="joinRoom('${list.roomId}')">입장</button></td>
+								</tr>`;
+
+
+						});
+						$('#roomList').html(htmlContent);
+
+					},
+					error: function () {
+						console.log("실패");
+					}
+
+				});
+			}
+
+			function joinRoom(roomId) {
+				window.location.href = `/room/${roomId}`;
+			}
+
+
+		</script>
+</body>
+
+</html>

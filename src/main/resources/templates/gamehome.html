@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>인게임</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+
+</head>
+<body>
+	
+	<input type="text" id="usernameInput" placeholder="임시 닉네임">
+	<input type="text" id="messageInput" placeholder="메세지 창">
+	<a id = "connectingElement"></a>	
+	
+	<script>
+		//임시
+		var roomId = 1;
+		var userId = document.getElementById("usernameInput").value;
+		var messageInput = document.getElementById("messageInput");
+		var connectingElement = document.getElementById("connectingElement"); // 오류 메시지를 표시할 요소
+		
+		function connect(event) {
+		    // 연결하고자 하는 Socket 의 endPoint
+		    var socket = new SockJS("/ws");
+		    stompClient = Stomp.over(socket);
+
+		    stompClient.connect({}, onConnected, onError);
+
+		    event.preventDefault();
+		}
+	
+		function onConnected() {
+		    // sub 할 url => /room/roomId 로 구독한다
+		    stompClient.subscribe("/room/" + roomId, onMessageReceived);
+			
+		    // 서버에 username 을 가진 유저가 들어왔다는 것을 알림
+		    // /pub/chat/enterUser 로 메시지를 보냄
+		    stompClient.send(
+		        "/send/"+roomId,
+		        {},
+		        JSON.stringify({
+					type: "ENTER",
+		            roomId: roomId,
+		            sender: userId
+		        })
+		    );
+		}
+		
+		function onError(){
+			connectingElement.textContent =
+			    "Could not connect to WebSocket server. Please refresh this page to try again!";
+			connectingElement.style.color = "red";
+		}
+
+		function sendMessage(event) {
+		    var messageContent = messageInput.value.trim();
+
+		    if (messageContent && stompClient) {
+		        var chatMessage = {
+					type: "CHAT",
+					roomId: roomId,
+		            sender: userId,
+		            message: messageInput.value
+		        };
+
+		        // JSON 형식으로 메시지를 전달
+		        stompClient.send("/send/"+ roomId, {}, JSON.stringify(chatMessage));
+		        messageInput.value = "";
+		    }
+		    event.preventDefault();
+		}
+
+		// 메시지를 받을 때마다 JSON 타입으로 받으며,
+		// 받은 JSON 형식의 메시지를 parse 해서 사용한다.
+		function onMessageReceived(payload) {
+		    var chat = JSON.parse(payload.body);
+
+		    var messageElement = document.createElement("li");
+
+		    if (chat.type === "ENTER") {
+		        messageElement.classList.add("event-message");
+		        chat.content = chat.sender + chat.message;
+	
+		    } else if (chat.type === "LEAVE") {
+		        messageElement.classList.add("event-message");
+		        chat.content = chat.sender + chat.message;
+	
+		    } else {
+		        messageElement.classList.add("chat-message");
+
+		        var avatarElement = document.createElement("i");
+		        var avatarText = document.createTextNode(chat.sender[0]);
+		        avatarElement.appendChild(avatarText);
+		        avatarElement.style["background-color"] = getAvatarColor(chat.sender);
+
+		        messageElement.appendChild(avatarElement);
+
+		        var usernameElement = document.createElement("span");
+		        var usernameText = document.createTextNode(chat.sender);
+		        usernameElement.appendChild(usernameText);
+		        messageElement.appendChild(usernameElement);
+		    }
+		}
+
+	</script>
+
+	
+	
+</body>
+</html>

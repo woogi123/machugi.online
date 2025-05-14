@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- ajax -->
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+		integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+	<title>인게임</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+		}
+
+		#chatBox {
+			width: 300px;
+			height: 300px;
+			overflow-y: auto;
+			border: 1px solid black;
+			padding: 10px;
+			margin-top: 10px;
+		}
+
+		.event-message {
+			color: gray;
+			font-style: italic;
+		}
+
+		.chat-message {
+			margin-bottom: 5px;
+		}
+
+		i {
+			font-style: normal;
+			font-weight: bold;
+			padding: 5px;
+			border-radius: 50%;
+			color: white;
+			display: inline-block;
+			text-align: center;
+			width: 20px;
+			height: 20px;
+			line-height: 20px;
+		}
+
+		span {
+			margin-left: 5px;
+		}
+	</style>
+</head>
+
+<body>
+	<input type="hidden" id="userId" th:value="${userId}">
+
+
+	<input type="text" id="messageInput" placeholder="메시지 입력">
+	<button id="sendBtn">전송</button>
+
+	<a id="connectingElement"></a>
+
+	<ul id="chatBox"></ul>
+
+
+	<script>
+		const path = window.location.pathname; // "/room/~roomId~"
+		const roomId = path.split("/")[2];
+		console.log(roomId); 
+		var userId = $("#userId").val();
+		console.log(roomId,userId);
+
+		var stompClient = null;
+		var messageInput = document.getElementById("messageInput");
+		var chatBox = document.getElementById("chatBox");
+		var connectingElement = document.getElementById("connectingElement");
+
+		document.getElementById("sendBtn").addEventListener("click", sendMessage);
+
+
+		window.onload = function () {
+
+			connect()
+		}
+
+		function connect() {
+			if (!userId) {
+				alert("잘못된 접근입니다.");
+				return;
+			}
+
+			if (stompClient && stompClient.connected) {
+				console.log("이미 연결됨");
+				return;
+			}
+
+			var socket = new SockJS("/ws");
+			stompClient = Stomp.over(socket);
+
+			stompClient.connect({}, onConnected, onError);
+			
+		}
+
+		function onConnected() {
+			stompClient.subscribe("/room/" + roomId, onMessageReceived);
+
+			stompClient.send("/send/" + roomId, {}, JSON.stringify({
+				type: "ENTER",
+				roomId: roomId,
+				userId: userId
+			}));
+		}
+
+		function onError() {
+			connectingElement.textContent =
+				"Could not connect to WebSocket server. Please refresh this page to try again!";
+			connectingElement.style.color = "red";
+		}
+
+		function sendMessage(event) {
+			var messageContent = messageInput.value.trim();
+
+			if (messageContent && stompClient) {
+				var chatMessage = {
+					type: "CHAT",
+					roomId: roomId,
+					userId: userId,
+					message: messageContent
+				};
+
+				stompClient.send("/send/" + roomId, {}, JSON.stringify(chatMessage));
+				messageInput.value = "";
+			}
+			event.preventDefault();
+		}
+
+		function onMessageReceived(payload) {
+			var chat = JSON.parse(payload.body);
+			var messageElement = document.createElement("li");
+
+			if (chat.type === "ENTER" || chat.type === "LEAVE") {
+				messageElement.classList.add("event-message");
+				messageElement.textContent = chat.userId + " " + chat.type;
+			} else {
+				messageElement.classList.add("chat-message");
+
+				var avatarElement = document.createElement("i");
+				var avatarText = document.createTextNode(chat.userId[0]);
+				avatarElement.appendChild(avatarText);
+				avatarElement.style["background-color"] = getAvatarColor(chat.userId);
+
+				var usernameElement = document.createElement("span");
+				var usernameText = document.createTextNode(chat.userId);
+				usernameElement.appendChild(usernameText);
+
+				var messageText = document.createElement("span");
+				messageText.textContent = ": " + chat.message;
+
+				messageElement.appendChild(avatarElement);
+				messageElement.appendChild(usernameElement);
+				messageElement.appendChild(messageText);
+			}
+
+			chatBox.appendChild(messageElement);
+			chatBox.scrollTop = chatBox.scrollHeight;
+		}
+
+		function getAvatarColor(userId) {
+			var colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#A133FF", "#33FFF5"];
+			var hash = 0;
+			for (var i = 0; i < userId.length; i++) {
+				hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+			}
+			var index = Math.abs(hash % colors.length);
+			return colors[index];
+		}
+	</script>
+
+</body>
+
+</html>

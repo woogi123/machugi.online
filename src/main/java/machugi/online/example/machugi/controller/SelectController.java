@@ -20,7 +20,7 @@ public class SelectController {
 
     @GetMapping("/select/newGame")
     String newGameForm(){
-        return "/newGame";
+        return "newGame";
     }
 
     @GetMapping("/select/findGame")
@@ -31,7 +31,7 @@ public class SelectController {
     @PostMapping("/select")
     public String image_attached(@ModelAttribute SelectDTO selectDTO){
         System.out.println("boardDTO = "+ selectDTO);
-        SelectService.save(selectDTO);
+        //SelectService.save(selectDTO);
         return "select";
     }
 }
